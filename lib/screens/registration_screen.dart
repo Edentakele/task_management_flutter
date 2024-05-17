@@ -22,22 +22,37 @@ class RegistrationScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
+            TextFormField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(
+                labelText: 'Name',
+                border: OutlineInputBorder(),
+              ),
             ),
-            TextField(
+            SizedBox(height: 12),
+            TextFormField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
             ),
-            TextField(
+            SizedBox(height: 12),
+            TextFormField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+              ),
               obscureText: true,
             ),
-            TextField(
+            SizedBox(height: 12),
+            TextFormField(
               controller: _confirmPasswordController,
-              decoration: InputDecoration(labelText: 'Confirm Password'),
+              decoration: InputDecoration(
+                labelText: 'Confirm Password',
+                border: OutlineInputBorder(),
+              ),
               obscureText: true,
             ),
             SizedBox(height: 20),
@@ -59,7 +74,8 @@ class RegistrationScreen extends StatelessWidget {
 
                 try {
                   await taskProvider.register(name, email, password);
-                  Navigator.pop(context);
+                  // Navigate to the task list screen after successful registration
+                  Navigator.pushReplacementNamed(context, '/task_list');
                 } catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

@@ -28,6 +28,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          SizedBox(
+            height: 20,
+          ),
           ElevatedButton(
             onPressed: () {
               Navigator.push(
@@ -36,6 +39,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
               );
             },
             child: Text('Create Task'),
+          ),
+          SizedBox(
+            height: 20,
           ),
           Expanded(
             child: Consumer<TaskProvider>(

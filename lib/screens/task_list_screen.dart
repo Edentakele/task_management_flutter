@@ -1,58 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:provider/provider.dart';
+import '../providers/task_provider.dart';
+import 'create_task_screen.dart';
+import '../widgets/task_item.dart';
+import 'update_task_screen.dart';
 
 class TaskListScreen extends StatefulWidget {
-  final String token;
-
-  TaskListScreen({required this.token});
-
   @override
   _TaskListScreenState createState() => _TaskListScreenState();
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
-  List<String> _tasks = [];
-
-  Future<void> _fetchTasks(String token) async {
-    final String apiUrl = 'http://127.0.0.1:8000/api/tasks';
-    final response = await http.get(
-      Uri.parse(apiUrl),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic> responseData = json.decode(response.body);
-      setState(() {
-        _tasks = responseData.map<String>((task) => task['title'].toString()).toList();
-      });
-    } else {
-      // Handle error
-      print('Failed to fetch tasks: ${response.statusCode}');
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _fetchTasks(widget.token); // Pass the token received from the constructor
+    Provider.of<TaskProvider>(context, listen: false).fetchTasks();
   }
 
   @override
   Widget build(BuildContext context) {
+    final taskProvider = Provider.of<TaskProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Task List'),
       ),
-      body: ListView.builder(
-        itemCount: _tasks.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(_tasks[index]),
-          );
-        },
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CreateTaskScreen()),
+              );
+            },
+            child: Text('Create Task'),
+          ),
+          Expanded(
+            child: Consumer<TaskProvider>(
+              builder: (context, taskProvider, child) {
+                if (taskProvider.tasks.isEmpty) {
+                  return Center(child: Text('No tasks available.'));
+                }
+
+                return ListView.builder(
+                  itemCount: taskProvider.tasks.length,
+                  itemBuilder: (context, index) {
+                    final task = taskProvider.tasks[index];
+                    return TaskItem(
+                      task: task,
+                      onDelete: () async {
+                        await taskProvider.deleteTask(task.id);
+                      },
+                      onEdit: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UpdateTaskScreen(task: task),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
-import 'registration_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('Welcome'),
       ),
       body: Center(
         child: Column(
@@ -15,20 +13,13 @@ class HomeScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => LoginScreen()),
-                );
+                Navigator.pushNamed(context, '/login');
               },
               child: Text('Login'),
             ),
-            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => RegistrationScreen()),
-                );
+                Navigator.pushNamed(context, '/register');
               },
               child: Text('Register'),
             ),

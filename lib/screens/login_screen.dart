@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:provider/provider.dart';
+import '../providers/task_provider.dart';
 import 'task_list_screen.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -9,6 +9,8 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Login'),
@@ -32,13 +34,13 @@ class LoginScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 try {
-                  final String token = await _login(
+                  await taskProvider.login(
                     _emailController.text,
                     _passwordController.text,
                   );
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (_) => TaskListScreen(token: token)),
+                    MaterialPageRoute(builder: (_) => TaskListScreen()),
                   );
                 } catch (error) {
                   showDialog(
@@ -64,23 +66,5 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<String> _login(String email, String password) async {
-    final String apiUrl = 'http://127.0.0.1:8000/api/login';
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      body: {
-        'email': email,
-        'password': password,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      return responseData['token'];
-    } else {
-      throw Exception('Failed to login');
-    }
   }
 }

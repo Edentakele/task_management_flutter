@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import '../providers/task_provider.dart';
 
 class RegistrationScreen extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Register'),
@@ -56,8 +58,7 @@ class RegistrationScreen extends StatelessWidget {
                 }
 
                 try {
-                  await _register(name, email, password);
-                  // Optionally, navigate to login screen after registration
+                  await taskProvider.register(name, email, password);
                   Navigator.pop(context);
                 } catch (error) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -73,27 +74,5 @@ class RegistrationScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<void> _register(
-      String name, String email, String password) async {
-    final String apiUrl = 'http://127.0.0.1:8000/api/register';
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      body: {
-        'name': name,
-        'email': email,
-        'password': password,
-        'password_confirmation': password, // Add password_confirmation field
-      },
-    );
-
-    if (response.statusCode == 201) {
-      // Registration successful
-      print('Registration successful');
-    } else {
-      // Registration failed
-      throw Exception('Failed to register');
-    }
   }
 }
